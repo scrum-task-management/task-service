@@ -1,3 +1,7 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+import { IConfig } from 'config';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
@@ -6,10 +10,12 @@ import { ConfigService } from '@nestjs/config';
 import * as cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
-import CustomLogger from './modules/log/customLogger';
 
-import { AllExceptionsFilter } from './configs/decorators/catchError';
-import getLogLevels from './utils/getLogLevels';
+import { TransformInterceptor } from '@microservice-task/config-interceptors';
+import { AllExceptionsFilter } from '@microservice-task/config-exceptions';
+import getLogLevels from '@microservice-task/utils/getLogLevels';
+import CustomLogger from '@microservice-task/module-log/customLogger';
+import { CONFIG } from '@microservice-task/module-config/config.provider';
 
 async function bootstrap() {
   // Logger
@@ -17,22 +23,22 @@ async function bootstrap() {
     logger: getLogLevels(process.env.NODE_ENV === 'production'),
     bufferLogs: true,
   });
-  const configService = app.get(ConfigService);
+  const configService = app.get<IConfig>(CONFIG);
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.KAFKA,
     options: {
       client: {
-        clientId: configService.get<string>('KAFKA_CLIENT_ID'),
-        brokers: configService.get<string>('KAFKA_BROKERS').split(','),
+        clientId: configService.get<string>('kafka.kafka_client_id'),
+        brokers: configService.get<string>('kafka.kafka_brokers').split(','),
       },
       consumer: {
-        groupId: configService.get<string>('KAFKA_CONFIG.CONSUMER_ID'),
+        groupId: configService.get<string>('kafka.consumer_id'),
       },
     },
   });
 
-  app.setGlobalPrefix(configService.get<string>('SERVER_CONFIG.BASE_API'));
+  app.setGlobalPrefix(configService.get<string>('server.base_url'));
 
   app.useLogger(app.get(CustomLogger));
 
@@ -44,6 +50,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(new TransformInterceptor());
 
   // Catch exception
   const httpAdapter = app.get(HttpAdapterHost);

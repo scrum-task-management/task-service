@@ -1,0 +1,4 @@
+env: local
+
+server:
+  base_url: /api/task

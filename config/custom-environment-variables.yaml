@@ -1,0 +1,30 @@
+env: NODE_ENV
+
+server:
+  host: SERVER_HOST
+  port: SERVER_PORT
+  hostname: SERVER_HOSTNAME
+
+postgresql:
+  host: POSTGRES_HOST
+  port: POSTGRES_PORT
+  username: POSTGRES_USER
+  password: POSTGRES_PASSWORD
+  database: POSTGRES_DB
+
+auth:
+  jwt_secret: JWT_SECRET
+  jwt_expiration_time: JWT_EXPIRATION_TIME
+  jwt_refresh_token_secret: JWT_REFRESH_TOKEN_SECRET
+  jwt_refresh_token_expiration_time: JWT_REFRESH_TOKEN_EXPIRATION_TIME
+
+kafka:
+  kafka_brokers: KAFKA_BROKERS
+  kafka_client_id: KAFKA_CLIENT_ID
+  consumer_id: KAFKA_CONSUMER_ID
+
+elasticsearch:
+  node: ELASTICSEARCH_NODE
+  auth:
+    username: ELASTICSEARCH_USERNAME
+    password: ELASTICSEARCH_PASSWORD

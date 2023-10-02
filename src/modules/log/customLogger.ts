@@ -1,7 +1,9 @@
-import { Injectable, ConsoleLogger } from '@nestjs/common';
+import { IConfig } from 'config';
+import { Injectable, ConsoleLogger, Inject } from '@nestjs/common';
 import { ConsoleLoggerOptions } from '@nestjs/common/services/console-logger.service';
-import { ConfigService } from '@nestjs/config';
-import getLogLevels from 'src/utils/getLogLevels';
+import { CONFIG } from '@microservice-task/module-config/config.provider';
+import getLogLevels from '@microservice-task/utils/getLogLevels';
+
 import LogsService from './logs.service';
 
 @Injectable()
@@ -11,10 +13,10 @@ class CustomLogger extends ConsoleLogger {
   constructor(
     context: string,
     options: ConsoleLoggerOptions,
-    configService: ConfigService,
+    @Inject(CONFIG) private readonly configService: IConfig,
     logsService: LogsService,
   ) {
-    const environment = configService.get('NODE_ENV');
+    const environment = configService.get('env');
 
     super(context, {
       ...options,

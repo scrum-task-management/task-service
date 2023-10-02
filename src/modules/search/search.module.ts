@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { IConfig } from 'config';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
+
+import { ConfigModule } from '@microservice-task/module-config/config.module';
+import { CONFIG } from '@microservice-task/module-config/config.provider';
 
 @Module({
   imports: [
-    ConfigModule,
     ElasticsearchModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        node: configService.get('ELASTICSEARCH_NODE'),
+      inject: [CONFIG],
+      useFactory: (configService: IConfig) => ({
+        node: configService.get('elasticsearch.node'),
         auth: {
-          username: configService.get('ELASTICSEARCH_USERNAME'),
-          password: configService.get('ELASTICSEARCH_PASSWORD'),
+          ...configService.get('elasticsearch.auth'),
         },
       }),
-      inject: [ConfigService],
     }),
   ],
   exports: [ElasticsearchModule],
