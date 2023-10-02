@@ -1,0 +1,18 @@
+version: "3"
+services:
+  scrum-task-api:
+    platform: linux/arm64
+    container_name: scrum-auth-api
+    image: vunam2000/scrum-auth-api
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    networks:
+      - scrum-microservice
+ 
+networks:
+  scrum-microservice:
+    driver: bridge
