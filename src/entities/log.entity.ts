@@ -1,16 +1,8 @@
-import { IsOptional } from 'class-validator';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity } from 'typeorm';
+import { BaseEntity } from './base.entity';
 
 @Entity('logs')
-export class Log {
-  @PrimaryGeneratedColumn()
-  public id: number;
-
+export class Log extends BaseEntity {
   @Column({ nullable: true })
   public context: string;
 
